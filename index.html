@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INNOVTECH - Développement Web & Mobile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .hero-gradient {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .project-card:hover {
+            transform: scale(1.02);
+            transition: transform 0.3s ease;
+        }
+        .whatsapp-float {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            transition: transform 0.2s ease;
+        }
+        .user-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            min-width: 200px;
+        }
+        .color-option {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        .color-option.active {
+            border-color: #ffffff;
+            box-shadow: 0 0 0 2px #000000;
+        }
+        .project-form-modal {
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-white" id="mainBody">
+    <!-- WhatsApp Floating Button -->
+    <button onclick="openWhatsApp()" class="whatsapp-float bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all duration-200">
+        <i class="fab fa-whatsapp text-2xl"></i>
+    </button>
+
+    <!-- Header -->
+    <header class="fixed top-0 w-full bg-white/95 backdrop-blur-sm shadow-sm z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-code text-white text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        INNOVTECH
+                    </span>
+                </div>
+                
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#accueil" class="text-gray-700 hover:text-blue-600 transition-colors">Accueil</a>
+                    <a href="#services" class="text-gray-700 hover:text-blue-600 transition-colors">Services</a>
+                    <a href="#apropos" class="text-gray-700 hover:text-blue-600 transition-colors">À propos</a>
+                    <a href="#projets" class="text-gray-700 hover:text-blue-600 transition-colors">Projets</a>
+                    <a href="#contact" class="text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <!-- User Greeting -->
+                    <div id="userGreeting" class="hidden text-gray-700">
+                        <span>Bonjour, <span id="userName">Utilisateur</span></span>
+                    </div>
+                    
+                    <div class="relative" id="userMenuContainer">
+                        <button onclick="toggleUserMenu()" class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors">
+                            <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                                <span id="userInitials">UT</span>
+                            </div>
+                        </button>
+                        
+                        <div id="userMenu" class="user-menu hidden bg-white border border-gray-200 rounded-lg shadow-lg py-2">
+                            <a href="#" onclick="openProfile(event)" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-user mr-2"></i>Profil
+                            </a>
+                            <a href="#" onclick="openSettings(event)" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-cog mr-2"></i>Paramètres
+                            </a>
+                            <a href="#" onclick="logout(event)" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <button onclick="openAuthModal('login')" id="loginBtn" class="hidden md:flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Se connecter</span>
+                    </button>
+                    <button onclick="openAuthModal('register')" id="registerBtn" class="hidden md:flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-user-plus"></i>
+                        <span>S'inscrire</span>
+                    </button>
+                    
+                    <button onclick="toggleMobileMenu()" class="md:hidden text-gray-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-2 space-y-2">
+                <a href="#accueil" class="block py-2 text-gray-700">Accueil</a>
+                <a href="#services" class="block py-2 text-gray-700">Services</a>
+                <a href="#apropos" class="block py-2 text-gray-700">À propos</a>
+                <a href="#projets" class="block py-2 text-gray-700">Projets</a>
+                <a href="#contact" class="block py-2 text-gray-700">Contact</a>
+                
+                <div id="mobileUserMenu" class="hidden border-t pt-2 mt-2">
+                    <a href="#" onclick="openProfile(event); toggleMobileMenu();" class="block py-2 text-gray-700">
+                        <i class="fas fa-user mr-2"></i>Profil
+                    </a>
+                    <a href="#" onclick="openSettings(event); toggleMobileMenu();" class="block py-2 text-gray-700">
+                        <i class="fas fa-cog mr-2"></i>Paramètres
+                    </a>
+                    <a href="#" onclick="logout(event); toggleMobileMenu();" class="block py-2 text-gray-700">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                    </a>
+                </div>
+                
+                <div id="mobileAuthButtons" class="border-t pt-2 mt-2">
+                    <button onclick="openAuthModal('login'); toggleMobileMenu();" class="block py-2 text-gray-700 w-full text-left">Se connecter</button>
+                    <button onclick="openAuthModal('register'); toggleMobileMenu();" class="block py-2 text-gray-700 w-full text-left">S'inscrire</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="accueil" class="pt-20 pb-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 id="welcomeMessage" class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+                        Transformez vos idées en
+                        <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> solutions digitales </span>
+                        innovantes
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8">
+                        INNOVTECH accompagne les entreprises dans leur transformation digitale 
+                        avec des solutions web et mobile sur mesure, performantes et évolutives.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button onclick="openProjectForm()" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200">
+                            Proposer un projet
+                        </button>
+                        <button onclick="openWhatsApp()" class="border-2 border-green-500 text-green-600 px-8 py-4 rounded-lg font-semibold hover:bg-green-500 hover:text-white transition-all duration-200 flex items-center justify-center gap-2">
+                            <i class="fab fa-whatsapp mr-2"></i>
+                            Contacter via WhatsApp
+                        </button>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                        <img src="https://placehold.co/500x400/ffffff/3b82f6?text=Digital+Innovation" alt="Digital Innovation" class="w-full rounded-lg shadow-2xl">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-bold text-blue-600 mb-2">150+</div>
+                    <div class="text-gray-600">Projets complétés</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-bold text-purple-600 mb-2">50+</div>
+                    <div class="text-gray-600">Clients satisfaits</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-bold text-green-600 mb-2">50+</div>
+                    <div class="text-gray-600">Experts techniques</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-bold text-orange-600 mb-2">1</div>
+                    <div class="text-gray-600">Année d'expérience</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Nos Services
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Des solutions complètes pour répondre à tous vos besoins numériques
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div class="service-card bg-white p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-300 border-l-4 border-blue-600">
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-blue-600 text-white p-3 rounded-lg">
+                                <i class="fas fa-code text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                                    Développement Web
+                                </h3>
+                                <p class="text-gray-600">
+                                    Création de sites web sur mesure, applications web progressives et solutions digitales innovantes.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="service-card bg-white p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-300">
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-gray-100 text-gray-600 p-3 rounded-lg">
+                                <i class="fas fa-mobile-alt text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                                    Applications Mobiles
+                                </h3>
+                                <p class="text-gray-600">
+                                    Applications natives et multiplateformes pour iOS et Android avec des interfaces intuitives.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="service-card bg-white p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-300">
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-gray-100 text-gray-600 p-3 rounded-lg">
+                                <i class="fas fa-globe text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                                    Solutions Digitales
+                                </h3>
+                                <p class="text-gray-600">
+                                    Stratégie digitale, conception UI/UX et intégration de systèmes complexes.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-2xl shadow-xl">
+                    <div class="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center">
+                        <img src="https://placehold.co/400x225/3b82f6/ffffff?text=Web+Development" alt="Web Development" class="rounded-lg shadow-lg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="apropos" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    À propos d'INNOVTECH
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Fondée en 2025 par le jeune et ambitieux développeur malien Luc Boubacar Koïta
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6">🚀 Notre Mission</h3>
+                        <p class="text-gray-700 mb-6">
+                            Transformer le paysage technologique africain en développant des solutions innovantes qui répondent aux besoins locaux tout en respectant les standards internationaux.
+                        </p>
+                        
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6">🌟 Notre Vision</h3>
+                        <p class="text-gray-700 mb-6">
+                            Devenir le leader incontournable de l'innovation technologique en Afrique, en formant les talents locaux et en créant des opportunités durables.
+                        </p>
+
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6">🎯 Nos Valeurs</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-center space-x-3">
+                                <i class="fas fa-star text-yellow-500"></i>
+                                <span class="text-gray-700"><strong>Excellence :</strong> Nous nous engageons à fournir des solutions de la plus haute qualité.</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <i class="fas fa-star text-yellow-500"></i>
+                                <span class="text-gray-700"><strong>Innovation :</strong> Nous repoussons constamment les limites de la technologie.</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <i class="fas fa-star text-yellow-500"></i>
+                                <span class="text-gray-700"><strong>Accessibilité :</strong> Nous rendons la technologie accessible à tous.</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <i class="fas fa-star text-yellow-500"></i>
+                                <span class="text-gray-700"><strong>Durabilité :</strong> Nous construisons pour l'avenir.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Fondateur</h3>
+                        <p class="text-gray-700 mb-4">
+                            <strong>Luc Boubacar Koïta</strong> - Développeur passionné et entrepreneur visionnaire
+                        </p>
+                        <p class="text-gray-600">
+                            Fondé en 2025 avec une vision claire de révolutionner la technologie en Afrique et dans le monde, 
+                            en proposant des solutions numériques modernes, accessibles et performantes.
+                        </p>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-green-500 to-blue-600 text-white p-6 rounded-xl">
+                        <h3 class="text-xl font-semibold mb-4">Notre Slogan</h3>
+                        <p class="text-lg italic">
+                            « Ensemble, révolutionnons la technologie pour un meilleur futur »
+                        </p>
+                        <p class="mt-4">
+                            Ce slogan incarne parfaitement notre engagement : bâtir, avec ses partenaires et clients, 
+                            un avenir technologique durable, créatif et tourné vers l'excellence.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projets" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Nos Projets Récents
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Découvrez quelques-unes de nos réalisations les plus impressionnantes
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
+                <div class="project-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div class="relative overflow-hidden">
+                        <img src="https://placehold.co/400x250/2563eb/ffffff?text=E-commerce" alt="Plateforme E-commerce" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                Web
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                            Plateforme E-commerce
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            Solution complète de vente en ligne
+                        </p>
+                        <button onclick="openProjectForm()" class="text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2">
+                            Proposer un projet similaire
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="project-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div class="relative overflow-hidden">
+                        <img src="https://placehold.co/400x250/7c3aed/ffffff?text=Banking+App" alt="Application Mobile Banking" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                Mobile
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                            Application Mobile Banking
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            Application sécurisée pour les services bancaires
+                        </p>
+                        <button onclick="openProjectForm()" class="text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2">
+                            Proposer un projet similaire
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="project-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div class="relative overflow-hidden">
+                        <img src="https://placehold.co/400x250/059669/ffffff?text=HR+System" alt="Système de Gestion RH" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                Web
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                            Système de Gestion RH
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            Plateforme de gestion des ressources humaines
+                        </p>
+                        <button onclick="openProjectForm()" class="text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2">
+                            Proposer un projet similaire
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="project-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div class="relative overflow-hidden">
+                        <img src="https://placehold.co/400x250/dc2626/ffffff?text=Fitness+App" alt="Application Fitness" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                Mobile
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                            Application Fitness
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            Suivi d'activité et coaching personnalisé
+                        </p>
+                        <button onclick="openProjectForm()" class="text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2">
+                            Proposer un projet similaire
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-br from-blue-600 to-purple-600">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+                Prêt à transformer votre idée ?
+            </h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                Contactez-nous dès aujourd'hui pour discuter de votre projet et découvrir 
+                comment nous pouvons vous aider à atteindre vos objectifs.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="openProjectForm()" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200 flex items-center justify-center gap-2">
+                    <i class="fas fa-project-diagram mr-2"></i>
+                    Proposer un projet
+                </button>
+                <button onclick="openWhatsApp()" class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-200 flex items-center justify-center gap-2">
+                    <i class="fab fa-whatsapp mr-2"></i>
+                    Contacter via WhatsApp
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                        Contactez-nous
+                    </h2>
+                    <p class="text-xl text-gray-600 mb-8">
+                        Nous sommes là pour répondre à toutes vos questions et discuter de vos projets.
+                    </p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-green-100 p-3 rounded-lg">
+                                <i class="fab fa-whatsapp text-green-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">WhatsApp</h3>
+                                <p class="text-gray-600">(223) 94472720</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-blue-100 p-3 rounded-lg">
+                                <i class="fas fa-envelope text-blue-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Email</h3>
+                                <p class="text-gray-600">contact@innovtech.com</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-purple-100 p-3 rounded-lg">
+                                <i class="fas fa-map-marker-alt text-purple-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Adresse</h3>
+                                <p class="text-gray-600">Bamako, Mali</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4 mt-8">
+                        <i class="fab fa-facebook text-gray-600 hover:text-blue-600 cursor-pointer transition-colors text-xl"></i>
+                        <i class="fab fa-twitter text-gray-600 hover:text-blue-400 cursor-pointer transition-colors text-xl"></i>
+                        <i class="fab fa-instagram text-gray-600 hover:text-pink-600 cursor-pointer transition-colors text-xl"></i>
+                        <i class="fab fa-linkedin text-gray-600 hover:text-blue-700 cursor-pointer transition-colors text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-8 rounded-2xl">
+                    <form class="space-y-6">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Prénom
+                                </label>
+                                <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre prénom">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Nom
+                                </label>
+                                <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre nom">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Email
+                            </label>
+                            <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="votre@email.com">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Sujet
+                            </label>
+                            <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Sujet de votre message">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Message
+                            </label>
+                            <textarea rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Décrivez votre projet..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200">
+                            Envoyer le message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <div class="mb-6">
+                <h3 id="authTitle" class="text-2xl font-bold text-gray-900"></h3>
+            </div>
+
+            <form id="authForm" class="space-y-4">
+                <div id="nameField" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Nom complet
+                    </label>
+                    <input type="text" name="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre nom complet">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Email
+                    </label>
+                    <input type="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="votre@email.com" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Mot de passe
+                    </label>
+                    <input type="password" name="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre mot de passe" required>
+                </div>
+                
+                <div id="confirmPasswordField" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Confirmer mot de passe
+                    </label>
+                    <input type="password" name="confirmPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Confirmez votre mot de passe">
+                </div>
+                
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200">
+                    <span id="authButtonText"></span>
+                </button>
+            </form>
+            
+            <div class="mt-4 text-center">
+                <button onclick="toggleAuthMode()" class="text-blue-600 hover:text-blue-700 font-medium">
+                    <span id="authToggleText"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-2xl w-full relative">
+            <button onclick="closeProfile()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Profil Utilisateur</h3>
+            </div>
+
+            <div class="space-y-6">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                        <span id="userInitials">UT</span>
+                    </div>
+                    <div>
+                        <h4 id="profileName" class="text-xl font-semibold text-gray-900">Utilisateur Test</h4>
+                        <p id="profileEmail" class="text-gray-600">utilisateur@test.com</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Prénom
+                        </label>
+                        <input type="text" id="profileFirstName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre prénom">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Nom
+                        </label>
+                        <input type="text" id="profileLastName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre nom">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Email
+                    </label>
+                    <input type="email" id="profileEmailInput" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="votre@email.com">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Téléphone
+                    </label>
+                    <input type="tel" id="profilePhone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre numéro de téléphone">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Bio
+                    </label>
+                    <textarea id="profileBio" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Décrivez-vous..."></textarea>
+                </div>
+                
+                <button onclick="saveProfile()" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200">
+                    Sauvegarder les modifications
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full relative">
+            <button onclick="closeSettings()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Paramètres</h3>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Couleur principale du site
+                    </label>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button onclick="changeTheme('blue')" class="color-option bg-blue-600" data-color="blue"></button>
+                        <button onclick="changeTheme('purple')" class="color-option bg-purple-600" data-color="purple"></button>
+                        <button onclick="changeTheme('green')" class="color-option bg-green-600" data-color="green"></button>
+                        <button onclick="changeTheme('red')" class="color-option bg-red-600" data-color="red"></button>
+                        <button onclick="changeTheme('yellow')" class="color-option bg-yellow-500" data-color="yellow"></button>
+                        <button onclick="changeTheme('pink')" class="color-option bg-pink-500" data-color="pink"></button>
+                        <button onclick="changeTheme('indigo')" class="color-option bg-indigo-600" data-color="indigo"></button>
+                        <button onclick="changeTheme('teal')" class="color-option bg-teal-600" data-color="teal"></button>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Mode d'affichage
+                    </label>
+                    <select id="displayMode" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                        <option value="light">Clair</option>
+                        <option value="dark">Sombre</option>
+                        <option value="auto">Automatique</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Langue
+                    </label>
+                    <select id="language" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                        <option value="fr">Français</option>
+                        <option value="en">Anglais</option>
+                        <option value="es">Espagnol</option>
+                        <option value="de">Allemand</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Code d'administration
+                    </label>
+                    <input type="password" id="adminCode" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Entrez le code d'admin">
+                    <button onclick="openAdminPanel()" class="mt-2 w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200">
+                        Accéder à l'espace admin
+                    </button>
+                </div>
+                
+                <button onclick="saveSettings()" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200">
+                    Sauvegarder les paramètres
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="adminPanel" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full relative">
+            <button onclick="closeAdminPanel()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Espace Administrateur</h3>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Changer le logo
+                    </label>
+                    <select id="logoSelector" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                        <option value="code">Code</option>
+                        <option value="cube">Cube</option>
+                        <option value="rocket">Fusée</option>
+                        <option value="lightbulb">Ampoule</option>
+                        <option value="star">Étoile</option>
+                    </select>
+                    <button onclick="changeAdminLogo()" class="mt-2 w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200">
+                        Appliquer le changement
+                    </button>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Changer le nom de l'entreprise
+                    </label>
+                    <input type="text" id="companyName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Nouveau nom">
+                    <button onclick="changeCompanyName()" class="mt-2 w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200">
+                        Changer le nom
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Form Modal -->
+    <div id="projectFormModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4 project-form-modal">
+        <div class="bg-white rounded-2xl p-8 max-w-2xl w-full relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeProjectForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Proposer un projet</h3>
+                <p class="text-gray-600">Remplissez le formulaire ci-dessous et envoyez directement à INNOVTECH via WhatsApp</p>
+            </div>
+
+            <form id="projectForm" class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Prénom
+                        </label>
+                        <input type="text" name="firstName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre prénom" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Nom
+                        </label>
+                        <input type="text" name="lastName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre nom" required>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Email
+                    </label>
+                    <input type="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="votre@email.com" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Téléphone
+                    </label>
+                    <input type="tel" name="phone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre numéro de téléphone" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Type de projet
+                    </label>
+                    <select name="projectType" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" required>
+                        <option value="">Sélectionnez un type de projet</option>
+                        <option value="web">Site Web</option>
+                        <option value="mobile">Application Mobile</option>
+                        <option value="digital">Solution Digitale</option>
+                        <option value="other">Autre</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Description du projet
+                    </label>
+                    <textarea name="description" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Décrivez votre projet en détail..." required></textarea>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Durée estimée
+                        </label>
+                        <select name="duration" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" required>
+                            <option value="">Sélectionnez une durée</option>
+                            <option value="1-2">1-2 semaines</option>
+                            <option value="3-4">3-4 semaines</option>
+                            <option value="1-2m">1-2 mois</option>
+                            <option value="3-6m">3-6 mois</option>
+                            <option value="6m+">Plus de 6 mois</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Budget estimé (FCFA)
+                        </label>
+                        <select name="budget" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" required>
+                            <option value="">Sélectionnez un budget</option>
+                            <option value="300000-500000">300 000 - 500 000 FCFA</option>
+                            <option value="500000-750000">500 000 - 750 000 FCFA</option>
+                            <option value="750000-1000000">750 000 - 1 000 000 FCFA</option>
+                            <option value="1000000+">Plus de 1 000 000 FCFA</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Priorité
+                    </label>
+                    <select name="priority" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" required>
+                        <option value="low">Basse</option>
+                        <option value="medium">Moyenne</option>
+                        <option value="high">Haute</option>
+                        <option value="urgent">Urgente</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2">
+                    <i class="fab fa-whatsapp mr-2"></i>
+                    Envoyer via WhatsApp
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">INNOVTECH</span>
+                    </div>
+                    <p class="text-gray-400">
+                        Votre partenaire de confiance pour la transformation digitale.
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-4">Services</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#services" class="hover:text-white transition-colors">Développement Web</a></li>
+                        <li><a href="#services" class="hover:text-white transition-colors">Applications Mobiles</a></li>
+                        <li><a href="#services" class="hover:text-white transition-colors">Solutions Digitales</a></li>
+                        <li><a href="#services" class="hover:text-white transition-colors">Consulting</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-4">Liens</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#accueil" class="hover:text-white transition-colors">Accueil</a></li>
+                        <li><a href="#apropos" class="hover:text-white transition-colors">À propos</a></li>
+                        <li><a href="#services" class="hover:text-white transition-colors">Services</a></li>
+                        <li><a href="#projets" class="hover:text-white transition-colors">Projets</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-4">Contact</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-center gap-2">
+                            <i class="fab fa-whatsapp"></i>
+                            (223) 94472720
+                        </li>
+                        <li>contact@innovtech.com</li>
+                        <li>Bamako, Mali</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 INNOVTECH. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Tracking Script -->
+    <script>
+        // Global variables to track authentication state
+        let isAuthenticated = false;
+        let currentUser = null;
+        let currentTheme = 'blue';
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // WhatsApp Function
+        function openWhatsApp() {
+            window.open('https://wa.me/22394472720', '_blank');
+        }
+
+        // Auth Modal Functions
+        function openAuthModal(mode) {
+            const modal = document.getElementById('authModal');
+            const title = document.getElementById('authTitle');
+            const buttonText = document.getElementById('authButtonText');
+            const toggleText = document.getElementById('authToggleText');
+            const nameField = document.getElementById('nameField');
+            const confirmPasswordField = document.getElementById('confirmPasswordField');
+            const form = document.getElementById('authForm');
+
+            if (mode === 'login') {
+                title.textContent = 'Se connecter';
+                buttonText.textContent = 'Se connecter';
+                toggleText.textContent = 'Pas de compte ? S\'inscrire';
+                nameField.classList.add('hidden');
+                confirmPasswordField.classList.add('hidden');
+                form.onsubmit = function(e) {
+                    e.preventDefault();
+                    const email = form.querySelector('input[name="email"]').value;
+                    const password = form.querySelector('input[name="password"]').value;
+                    
+                    // Simple validation - in real app, this would be server-side
+                    if (email && password) {
+                        // Simulate user login
+                        const nameParts = email.split('@')[0].split('.');
+                        const firstName = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
+                        const lastName = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1) : 'Test';
+                        
+                        currentUser = {
+                            firstName: firstName,
+                            lastName: lastName,
+                            email: email,
+                            phone: '',
+                            bio: ''
+                        };
+                        isAuthenticated = true;
+                        closeAuthModal();
+                        updateUIAfterAuth();
+                        alert('Connexion réussie !');
+                    } else {
+                        alert('Veuillez remplir tous les champs');
+                    }
+                };
+            } else {
+                title.textContent = 'S\'inscrire';
+                buttonText.textContent = 'S\'inscrire';
+                toggleText.textContent = 'Déjà un compte ? Se connecter';
+                nameField.classList.remove('hidden');
+                confirmPasswordField.classList.remove('hidden');
+                form.onsubmit = function(e) {
+                    e.preventDefault();
+                    const name = form.querySelector('input[name="name"]').value;
+                    const email = form.querySelector('input[name="email"]').value;
+                    const password = form.querySelector('input[name="password"]').value;
+                    const confirmPassword = form.querySelector('input[name="confirmPassword"]').value;
+                    
+                    if (password !== confirmPassword) {
+                        alert('Les mots de passe ne correspondent pas !');
+                        return;
+                    }
+                    
+                    if (password.length < 6) {
+                        alert('Le mot de passe doit contenir au moins 6 caractères');
+                        return;
+                    }
+                    
+                    // Extract first and last name
+                    const nameParts = name.split(' ');
+                    const firstName = nameParts[0];
+                    const lastName = nameParts.slice(1).join(' ') || 'Test';
+                    
+                    // Simulate user registration
+                    currentUser = {
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: email,
+                        phone: '',
+                        bio: ''
+                    };
+                    isAuthenticated = true;
+                    closeAuthModal();
+                    updateUIAfterAuth();
+                    
+                    // Send email to koitalucboubacar0@gmail.com
+                    const subject = encodeURIComponent('Nouvel utilisateur inscrit - INNOVTECH');
+                    const body = encodeURIComponent(`Nouvel utilisateur inscrit:\n\nNom: ${firstName} ${lastName}\nEmail: ${email}\nDate: ${new Date().toLocaleString()}`);
+                    window.open(`mailto:koitalucboubacar0@gmail.com?subject=${subject}&body=${body}`, '_blank');
+                    
+                    alert(`Bonjour ${firstName} ${lastName} ! Bienvenu sur La plateforme INNOVTECH.`);
+                };
+            }
+            
+            document.getElementById('authMode').value = mode;
+            modal.classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function toggleAuthMode() {
+            const currentMode = document.getElementById('authMode').value;
+            const newMode = currentMode === 'login' ? 'register' : 'login';
+            openAuthModal(newMode);
+        }
+
+        // Update UI after authentication
+        function updateUIAfterAuth() {
+            if (isAuthenticated && currentUser) {
+                // Show user greeting
+                document.getElementById('userGreeting').classList.remove('hidden');
+                document.getElementById('userName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+                document.getElementById('userInitials').textContent = (currentUser.firstName[0] + currentUser.lastName[0]).toUpperCase();
+                
+                // Hide auth buttons
+                document.getElementById('loginBtn').classList.add('hidden');
+                document.getElementById('registerBtn').classList.add('hidden');
+                
+                // Show mobile user menu
+                document.getElementById('mobileUserMenu').classList.remove('hidden');
+                document.getElementById('mobileAuthButtons').classList.add('hidden');
+                
+                // Update welcome message
+                document.getElementById('welcomeMessage').innerHTML = 
+                    `Bonjour <span class="text-blue-600">${currentUser.firstName}</span>,<br>
+                     Bienvenu sur La plateforme <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">INNOVTECH</span>`;
+            } else {
+                // Hide user greeting
+                document.getElementById('userGreeting').classList.add('hidden');
+                
+                // Show auth buttons
+                document.getElementById('loginBtn').classList.remove('hidden');
+                document.getElementById('registerBtn').classList.remove('hidden');
+                
+                // Show mobile auth buttons
+                document.getElementById('mobileUserMenu').classList.add('hidden');
+                document.getElementById('mobileAuthButtons').classList.remove('hidden');
+                
+                // Reset welcome message
+                document.getElementById('welcomeMessage').innerHTML = 
+                    `Transformez vos idées en
+                     <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> solutions digitales </span>
+                     innovantes`;
+            }
+        }
+
+        // User menu functions
+        function toggleUserMenu() {
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function openProfile(event) {
+            event.preventDefault();
+            if (isAuthenticated && currentUser) {
+                document.getElementById('profileFirstName').value = currentUser.firstName;
+                document.getElementById('profileLastName').value = currentUser.lastName;
+                document.getElementById('profileEmailInput').value = currentUser.email;
+                document.getElementById('profilePhone').value = currentUser.phone || '';
+                document.getElementById('profileBio').value = currentUser.bio || '';
+                document.getElementById('profileName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+                document.getElementById('profileEmail').textContent = currentUser.email;
+                document.getElementById('userInitials').textContent = (currentUser.firstName[0] + currentUser.lastName[0]).toUpperCase();
+                
+                document.getElementById('profileModal').classList.remove('hidden');
+            }
+        }
+
+        function closeProfile() {
+            document.getElementById('profileModal').classList.add('hidden');
+        }
+
+        function saveProfile() {
+            if (isAuthenticated && currentUser) {
+                currentUser.firstName = document.getElementById('profileFirstName').value;
+                currentUser.lastName = document.getElementById('profileLastName').value;
+                currentUser.email = document.getElementById('profileEmailInput').value;
+                currentUser.phone = document.getElementById('profilePhone').value;
+                currentUser.bio = document.getElementById('profileBio').value;
+                
+                updateUIAfterAuth();
+                closeProfile();
+                alert('Profil mis à jour avec succès !');
+            }
+        }
+
+        function openSettings(event) {
+            event.preventDefault();
+            // Set current theme as active
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.dataset.color === currentTheme) {
+                    option.classList.add('active');
+                }
+            });
+            
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function openAdminPanel() {
+            const code = document.getElementById('adminCode').value;
+            if (code === 'innov!17@') {
+                document.getElementById('settingsModal').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+            } else {
+                alert('Code d\'administration incorrect !');
+            }
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('adminPanel').classList.add('hidden');
+        }
+
+        function changeAdminLogo() {
+            const logoType = document.getElementById('logoSelector').value;
+            let iconClass = '';
+            
+            switch(logoType) {
+                case 'code':
+                    iconClass = 'fas fa-code';
+                    break;
+                case 'cube':
+                    iconClass = 'fas fa-cube';
+                    break;
+                case 'rocket':
+                    iconClass = 'fas fa-rocket';
+                    break;
+                case 'lightbulb':
+                    iconClass = 'fas fa-lightbulb';
+                    break;
+                case 'star':
+                    iconClass = 'fas fa-star';
+                    break;
+            }
+            
+            document.getElementById('logoIcon').className = iconClass + ' text-white text-lg';
+            document.getElementById('footerLogoIcon').className = iconClass + ' text-white';
+            alert('Logo changé avec succès !');
+        }
+
+        function changeCompanyName() {
+            const newName = document.getElementById('companyName').value;
+            if (newName) {
+                document.querySelector('.bg-gradient-to-r.from-blue-600.to-purple-600.bg-clip-text.text-transparent').textContent = newName;
+                document.querySelector('.text-xl.font-bold').textContent = newName;
+                alert('Nom de l\'entreprise changé avec succès !');
+            }
+        }
+
+        function saveSettings() {
+            const displayMode = document.getElementById('displayMode').value;
+            const language = document.getElementById('language').value;
+            
+            // In a real app, you would save these settings to localStorage or a server
+            alert('Paramètres sauvegardés avec succès !');
+            closeSettings();
+        }
+
+        function logout(event) {
+            event.preventDefault();
+            isAuthenticated = false;
+            currentUser = null;
+            updateUIAfterAuth();
+            closeUserMenu();
+            alert('Vous avez été déconnecté avec succès.');
+        }
+
+        function closeUserMenu() {
+            document.getElementById('userMenu').classList.add('hidden');
+        }
+
+        // Change theme function
+        function changeTheme(color) {
+            currentTheme = color;
+            
+            // Update active state
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.dataset.color === color) {
+                    option.classList.add('active');
+                }
+            });
+            
+            const body = document.getElementById('mainBody');
+            const header = document.querySelector('header');
+            
+            // Remove all theme classes
+            body.classList.remove('bg-blue-50', 'bg-purple-50', 'bg-green-50', 'bg-red-50', 'bg-yellow-50', 'bg-pink-50', 'bg-indigo-50', 'bg-teal-50');
+            header.classList.remove('bg-blue-50', 'bg-purple-50', 'bg-green-50', 'bg-red-50', 'bg-yellow-50', 'bg-pink-50', 'bg-indigo-50', 'bg-teal-50');
+            
+            // Add new theme class based on color
+            switch(color) {
+                case 'blue':
+                    body.classList.add('bg-blue-50');
+                    header.classList.add('bg-blue-50');
+                    break;
+                case 'purple':
+                    body.classList.add('bg-purple-50');
+                    header.classList.add('bg-purple-50');
+                    break;
+                case 'green':
+                    body.classList.add('bg-green-50');
+                    header.classList.add('bg-green-50');
+                    break;
+                case 'red':
+                    body.classList.add('bg-red-50');
+                    header.classList.add('bg-red-50');
+                    break;
+                case 'yellow':
+                    body.classList.add('bg-yellow-50');
+                    header.classList.add('bg-yellow-50');
+                    break;
+                case 'pink':
+                    body.classList.add('bg-pink-50');
+                    header.classList.add('bg-pink-50');
+                    break;
+                case 'indigo':
+                    body.classList.add('bg-indigo-50');
+                    header.classList.add('bg-indigo-50');
+                    break;
+                case 'teal':
+                    body.classList.add('bg-teal-50');
+                    header.classList.add('bg-teal-50');
+                    break;
+            }
+        }
+
+        // Project Form Functions
+        function openProjectForm() {
+            document.getElementById('projectFormModal').classList.remove('hidden');
+        }
+
+        function closeProjectForm() {
+            document.getElementById('projectFormModal').classList.add('hidden');
+        }
+
+        // Handle project form submission
+        document.getElementById('projectForm').onsubmit = function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const projectData = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                projectType: formData.get('projectType'),
+                description: formData.get('description'),
+                duration: formData.get('duration'),
+                budget: formData.get('budget'),
+                priority: formData.get('priority')
+            };
+
+            // Create WhatsApp message
+            const message = `Nouvelle proposition de projet de ${projectData.firstName} ${projectData.lastName}:\n\n` +
+                           `Email: ${projectData.email}\n` +
+                           `Téléphone: ${projectData.phone}\n` +
+                           `Type de projet: ${projectData.projectType}\n` +
+                           `Durée estimée: ${projectData.duration}\n` +
+                           `Budget estimé: ${projectData.budget}\n` +
+                           `Priorité: ${projectData.priority}\n\n` +
+                           `Description:\n${projectData.description}`;
+
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/22394472720?text=${encodedMessage}`, '_blank');
+            
+            closeProjectForm();
+            alert('Votre projet a été envoyé avec succès via WhatsApp !');
+        };
+
+        // Add hidden input to track mode
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('authForm');
+            const modeInput = document.createElement('input');
+            modeInput.type = 'hidden';
+            modeInput.id = 'authMode';
+            modeInput.name = 'mode';
+            form.appendChild(modeInput);
+            
+            // Initialize UI
+            updateUIAfterAuth();
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const menuButton = document.querySelector('[onclick="toggleMobileMenu()"]');
+            
+            if (!mobileMenu.contains(event.target) && !menuButton.contains(event.target) && !mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const authModal = document.getElementById('authModal');
+            const projectModal = document.getElementById('projectFormModal');
+            const profileModal = document.getElementById('profileModal');
+            const settingsModal = document.getElementById('settingsModal');
+            const adminPanel = document.getElementById('adminPanel');
+            const userMenu = document.getElementById('userMenu');
+            const userMenuButton = document.querySelector('[onclick="toggleUserMenu()"]');
+            
+            if (event.target === authModal.parentElement) {
+                closeAuthModal();
+            }
+            
+            if (event.target === projectModal.parentElement) {
+                closeProjectForm();
+            }
+            
+            if (event.target === profileModal.parentElement) {
+                closeProfile();
+            }
+            
+            if (event.target === settingsModal.parentElement) {
+                closeSettings();
+            }
+            
+            if (event.target === adminPanel.parentElement) {
+                closeAdminPanel();
+            }
+            
+            if (event.target !== userMenu && event.target !== userMenuButton && !userMenu.contains(event.target)) {
+                userMenu.classList.add('hidden');
+            }
+        };
+    </script>
+
+    <!-- Invisible Tracking Script -->
+    <script>
+        // Invisible visitor tracking system
+        (function() {
+            // Collect visitor information silently
+            const visitorData = {
+                ip: 'DETECTED_IP', // Will be replaced by server-side detection
+                timestamp: new Date().toISOString(),
+                page: window.location.href,
+                userAgent: navigator.userAgent,
+                referrer: document.referrer,
+                screenResolution: `${screen.width}x${screen.height}`,
+                language: navigator.language,
+                platform: navigator.platform,
+                cookiesEnabled: navigator.cookieEnabled,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            };
+
+            // Send tracking data to server via AJAX
+            fetch('/tracking.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(visitorData)
+            }).catch(error => {
+                // Silent failure - don't alert user about tracking
+                console.log('Tracking data sent silently');
+            });
+
+            // Also send via image request (invisible tracking pixel)
+            const trackingPixel = new Image(1, 1);
+            trackingPixel.src = '/tracking.php?' + new URLSearchParams({
+                ip: 'DETECTED_IP',
+                page: encodeURIComponent(window.location.href),
+                referrer: encodeURIComponent(document.referrer),
+                userAgent: encodeURIComponent(navigator.userAgent)
+            });
+            trackingPixel.style.display = 'none';
+            document.body.appendChild(trackingPixel);
+        })();
+    </script>
+</body>
+</html>
+
