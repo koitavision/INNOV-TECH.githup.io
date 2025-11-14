@@ -891,39 +891,6 @@
             </div>
         </div>
     </div>
-    <!-- Project Details Modal -->
-    <div id="projectDetailsModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4 project-details-modal">
-        <div class="bg-white rounded-2xl p-8 max-w-4xl w-full relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeProjectDetails()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            <div class="mb-6">
-                <h3 id="projectDetailTitle" class="text-3xl font-bold text-gray-900 mb-2">Détails du Projet</h3>
-                <p id="projectDetailDescription" class="text-gray-600">Description du projet...</p>
-            </div>
-            <div class="mb-6">
-                <img id="projectDetailImage" src="" alt="Détail du projet" class="w-full rounded-xl project-detail-image">
-            </div>
-            <div class="mb-6">
-                <h4 class="text-xl font-semibold text-gray-900 mb-2">Technologies Utilisées</h4>
-                <p id="projectDetailTech" class="text-gray-600">React, Node.js, PostgreSQL...</p>
-            </div>
-            <div class="mb-6">
-                <h4 class="text-xl font-semibold text-gray-900 mb-2">Fonctionnalités Clés</h4>
-                <ul id="projectDetailFeatures" class="list-disc list-inside text-gray-600 space-y-1">
-                    <!-- Features will be populated by JS -->
-                </ul>
-            </div>
-            <div class="mb-6">
-                <h4 class="text-xl font-semibold text-gray-900 mb-2">Résultats</h4>
-                <p id="projectDetailResults" class="text-gray-600">Augmentation de 30% de la productivité...</p>
-            </div>
-            <button onclick="openWhatsApp()" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2">
-                <i class="fab fa-whatsapp mr-2"></i>
-                Contacter pour personnalisation
-            </button>
-        </div>
-    </div>
     <!-- Project Form Modal -->
     <div id="projectFormModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4 project-form-modal">
         <div class="bg-white rounded-2xl p-8 max-w-2xl w-full relative max-h-[90vh] overflow-y-auto">
@@ -1028,6 +995,39 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+    <!-- Project Details Modal -->
+    <div id="projectDetailsModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4 project-details-modal">
+        <div class="bg-white rounded-2xl p-8 max-w-4xl w-full relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeProjectDetails()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div class="mb-6">
+                <h3 id="projectDetailTitle" class="text-3xl font-bold text-gray-900 mb-2">Détails du Projet</h3>
+                <p id="projectDetailDescription" class="text-gray-600">Description du projet...</p>
+            </div>
+            <div class="mb-6">
+                <img id="projectDetailImage" src="" alt="Détail du projet" class="w-full rounded-xl project-detail-image">
+            </div>
+            <div class="mb-6">
+                <h4 class="text-xl font-semibold text-gray-900 mb-2">Technologies Utilisées</h4>
+                <p id="projectDetailTech" class="text-gray-600">React, Node.js, PostgreSQL...</p>
+            </div>
+            <div class="mb-6">
+                <h4 class="text-xl font-semibold text-gray-900 mb-2">Fonctionnalités Clés</h4>
+                <ul id="projectDetailFeatures" class="list-disc list-inside text-gray-600 space-y-1">
+                    <!-- Features will be populated by JS -->
+                </ul>
+            </div>
+            <div class="mb-6">
+                <h4 class="text-xl font-semibold text-gray-900 mb-2">Résultats</h4>
+                <p id="projectDetailResults" class="text-gray-600">Augmentation de 30% de la productivité...</p>
+            </div>
+            <button onclick="openWhatsApp()" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2">
+                <i class="fab fa-whatsapp mr-2"></i>
+                Contacter pour personnalisation
+            </button>
         </div>
     </div>
     <!-- Footer -->
@@ -1700,7 +1700,6 @@ ${contactData.message}`;
         window.onclick = function(event) {
             const authModal = document.getElementById('authModal');
             const projectModal = document.getElementById('projectFormModal');
-            const projectDetailsModal = document.getElementById('projectDetailsModal');
             const profileModal = document.getElementById('profileModal');
             const settingsModal = document.getElementById('settingsModal');
             const adminPanel = document.getElementById('adminPanel');
@@ -1712,9 +1711,6 @@ ${contactData.message}`;
             }
             if (event.target === projectModal.parentElement) {
                 closeProjectForm();
-            }
-            if (event.target === projectDetailsModal.parentElement) {
-                closeProjectDetails();
             }
             if (event.target === profileModal.parentElement) {
                 closeProfile();
