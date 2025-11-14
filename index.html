@@ -28,6 +28,16 @@
             transform: scale(1.1);
             transition: transform 0.2s ease;
         }
+        .email-float {
+            position: fixed;
+            bottom: 80px;
+            right: 24px;
+            z-index: 1000;
+        }
+        .email-float:hover {
+            transform: scale(1.1);
+            transition: transform 0.2s ease;
+        }
         .user-menu {
             position: absolute;
             top: 100%;
@@ -57,6 +67,100 @@
             max-height: 90vh;
             overflow-y: auto;
         }
+        .chatbot-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+        }
+        .chatbot-window {
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chatbot-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            padding: 16px;
+            font-weight: bold;
+        }
+        .chatbot-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+        .chatbot-input {
+            display: flex;
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+        .chatbot-input input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            margin-right: 8px;
+        }
+        .chatbot-input button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .message {
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        .user-message {
+            background: #3b82f6;
+            color: white;
+            margin-left: auto;
+        }
+        .bot-message {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        .dark-mode {
+            background-color: #1f2937 !important;
+            color: #f9fafb !important;
+        }
+        .dark-mode .bg-white {
+            background-color: #374151 !important;
+        }
+        .dark-mode .text-gray-900 {
+            color: #f9fafb !important;
+        }
+        .dark-mode .text-gray-600 {
+            color: #d1d5db !important;
+        }
+        .dark-mode .bg-gray-50 {
+            background-color: #374151 !important;
+        }
+        .dark-mode .bg-gray-900 {
+            background-color: #111827 !important;
+        }
+        .dark-mode .border-gray-300 {
+            border-color: #4b5563 !important;
+        }
+
+        /* Styles pour la modale de détails du projet */
+        .project-details-modal {
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .project-detail-image {
+            height: 300px; /* Hauteur fixe pour l'image de détail */
+            object-fit: cover; /* Couvre la zone sans déformation */
+        }
     </style>
 </head>
 <body class="bg-white" id="mainBody">
@@ -64,20 +168,49 @@
     <button onclick="openWhatsApp()" class="whatsapp-float bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all duration-200">
         <i class="fab fa-whatsapp text-2xl"></i>
     </button>
-
+    <!-- Email Floating Button -->
+    <button onclick="openEmail()" class="email-float bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition-all duration-200">
+        <i class="fas fa-envelope text-2xl"></i>
+    </button>
+    <!-- Chatbot Floating Button -->
+    <button onclick="toggleChatbot()" class="chatbot-container bg-purple-600 text-white p-4 rounded-full shadow-lg hover:bg-purple-700 transition-all duration-200">
+        <i class="fas fa-robot text-2xl"></i>
+    </button>
+    <!-- Chatbot Window -->
+    <div id="chatbotWindow" class="chatbot-container hidden">
+        <div class="chatbot-window">
+            <div class="chatbot-header">
+                <div class="flex items-center">
+                    <i class="fas fa-robot mr-2"></i>
+                    <span>Wisdom+</span>
+                    <button onclick="closeChatbot()" class="ml-auto text-white hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chatbot-messages" id="chatMessages">
+                <div class="message bot-message">
+                    Bonjour ! Je suis Wisdom+, votre assistante intelligente. Comment puis-je vous aider aujourd'hui ?
+                </div>
+            </div>
+            <div class="chatbot-input">
+                <input type="text" id="chatInput" placeholder="Tapez votre message..." onkeypress="handleChatKeyPress(event)">
+                <button onclick="sendMessage()">Envoyer</button>
+            </div>
+        </div>
+    </div>
     <!-- Header -->
     <header class="fixed top-0 w-full bg-white/95 backdrop-blur-sm shadow-sm z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center space-x-2">
                     <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-code text-white text-lg"></i>
+                        <i id="logoIcon" class="fas fa-code text-white text-lg"></i>
                     </div>
-                    <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" id="companyName">
                         INNOVTECH
                     </span>
                 </div>
-                
                 <nav class="hidden md:flex space-x-8">
                     <a href="#accueil" class="text-gray-700 hover:text-blue-600 transition-colors">Accueil</a>
                     <a href="#services" class="text-gray-700 hover:text-blue-600 transition-colors">Services</a>
@@ -85,20 +218,17 @@
                     <a href="#projets" class="text-gray-700 hover:text-blue-600 transition-colors">Projets</a>
                     <a href="#contact" class="text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
                 </nav>
-
                 <div class="flex items-center space-x-4">
                     <!-- User Greeting -->
                     <div id="userGreeting" class="hidden text-gray-700">
                         <span>Bonjour, <span id="userName">Utilisateur</span></span>
                     </div>
-                    
                     <div class="relative" id="userMenuContainer">
                         <button onclick="toggleUserMenu()" class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors">
                             <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
                                 <span id="userInitials">UT</span>
                             </div>
                         </button>
-                        
                         <div id="userMenu" class="user-menu hidden bg-white border border-gray-200 rounded-lg shadow-lg py-2">
                             <a href="#" onclick="openProfile(event)" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                                 <i class="fas fa-user mr-2"></i>Profil
@@ -111,7 +241,6 @@
                             </a>
                         </div>
                     </div>
-                    
                     <button onclick="openAuthModal('login')" id="loginBtn" class="hidden md:flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors">
                         <i class="fas fa-sign-in-alt"></i>
                         <span>Se connecter</span>
@@ -120,14 +249,12 @@
                         <i class="fas fa-user-plus"></i>
                         <span>S'inscrire</span>
                     </button>
-                    
                     <button onclick="toggleMobileMenu()" class="md:hidden text-gray-700">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
             </div>
         </div>
-
         <!-- Mobile Menu -->
         <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
             <div class="px-4 py-2 space-y-2">
@@ -136,7 +263,6 @@
                 <a href="#apropos" class="block py-2 text-gray-700">À propos</a>
                 <a href="#projets" class="block py-2 text-gray-700">Projets</a>
                 <a href="#contact" class="block py-2 text-gray-700">Contact</a>
-                
                 <div id="mobileUserMenu" class="hidden border-t pt-2 mt-2">
                     <a href="#" onclick="openProfile(event); toggleMobileMenu();" class="block py-2 text-gray-700">
                         <i class="fas fa-user mr-2"></i>Profil
@@ -148,7 +274,6 @@
                         <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
                     </a>
                 </div>
-                
                 <div id="mobileAuthButtons" class="border-t pt-2 mt-2">
                     <button onclick="openAuthModal('login'); toggleMobileMenu();" class="block py-2 text-gray-700 w-full text-left">Se connecter</button>
                     <button onclick="openAuthModal('register'); toggleMobileMenu();" class="block py-2 text-gray-700 w-full text-left">S'inscrire</button>
@@ -156,7 +281,6 @@
             </div>
         </div>
     </header>
-
     <!-- Hero Section -->
     <section id="accueil" class="pt-20 pb-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -189,7 +313,6 @@
             </div>
         </div>
     </section>
-
     <!-- Stats Section -->
     <section class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -213,7 +336,6 @@
             </div>
         </div>
     </section>
-
     <!-- Services Section -->
     <section id="services" class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -225,7 +347,6 @@
                     Des solutions complètes pour répondre à tous vos besoins numériques
                 </p>
             </div>
-
             <div class="grid lg:grid-cols-2 gap-12 items-center">
                 <div class="space-y-6">
                     <div class="service-card bg-white p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-300 border-l-4 border-blue-600">
@@ -243,7 +364,6 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div class="service-card bg-white p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-300">
                         <div class="flex items-start space-x-4">
                             <div class="bg-gray-100 text-gray-600 p-3 rounded-lg">
@@ -259,7 +379,6 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div class="service-card bg-white p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-300">
                         <div class="flex items-start space-x-4">
                             <div class="bg-gray-100 text-gray-600 p-3 rounded-lg">
@@ -276,7 +395,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="bg-white p-8 rounded-2xl shadow-xl">
                     <div class="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center">
                         <img src="https://placehold.co/400x225/3b82f6/ffffff?text=Web+Development" alt="Web Development" class="rounded-lg shadow-lg">
@@ -285,7 +403,6 @@
             </div>
         </div>
     </section>
-
     <!-- About Section -->
     <section id="apropos" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -297,7 +414,6 @@
                     Fondée en 2025 par le jeune et ambitieux développeur malien Luc Boubacar Koïta
                 </p>
             </div>
-
             <div class="grid lg:grid-cols-2 gap-12 items-center">
                 <div>
                     <div class="bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-2xl">
@@ -305,12 +421,10 @@
                         <p class="text-gray-700 mb-6">
                             Transformer le paysage technologique africain en développant des solutions innovantes qui répondent aux besoins locaux tout en respectant les standards internationaux.
                         </p>
-                        
                         <h3 class="text-2xl font-bold text-gray-900 mb-6">🌟 Notre Vision</h3>
                         <p class="text-gray-700 mb-6">
                             Devenir le leader incontournable de l'innovation technologique en Afrique, en formant les talents locaux et en créant des opportunités durables.
                         </p>
-
                         <h3 class="text-2xl font-bold text-gray-900 mb-6">🎯 Nos Valeurs</h3>
                         <ul class="space-y-3">
                             <li class="flex items-center space-x-3">
@@ -332,7 +446,6 @@
                         </ul>
                     </div>
                 </div>
-
                 <div class="space-y-8">
                     <div class="bg-white p-6 rounded-xl shadow-lg">
                         <h3 class="text-xl font-semibold text-gray-900 mb-4">Fondateur</h3>
@@ -344,7 +457,6 @@
                             en proposant des solutions numériques modernes, accessibles et performantes.
                         </p>
                     </div>
-
                     <div class="bg-gradient-to-r from-green-500 to-blue-600 text-white p-6 rounded-xl">
                         <h3 class="text-xl font-semibold mb-4">Notre Slogan</h3>
                         <p class="text-lg italic">
@@ -359,7 +471,6 @@
             </div>
         </div>
     </section>
-
     <!-- Projects Section -->
     <section id="projets" class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -371,9 +482,8 @@
                     Découvrez quelques-unes de nos réalisations les plus impressionnantes
                 </p>
             </div>
-
             <div class="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
-                <div class="project-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="project-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer" onclick="openProjectDetails('ecommerce')">
                     <div class="relative overflow-hidden">
                         <img src="https://placehold.co/400x250/2563eb/ffffff?text=E-commerce" alt="Plateforme E-commerce" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
                         <div class="absolute top-4 left-4">
@@ -389,14 +499,13 @@
                         <p class="text-gray-600 mb-4">
                             Solution complète de vente en ligne
                         </p>
-                        <button onclick="openProjectForm()" class="text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2">
-                            Proposer un projet similaire
+                        <button class="text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2">
+                            Voir les détails
                             <i class="fas fa-arrow-right ml-2"></i>
                         </button>
                     </div>
                 </div>
-
-                <div class="project-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="project-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer" onclick="openProjectDetails('banking')">
                     <div class="relative overflow-hidden">
                         <img src="https://placehold.co/400x250/7c3aed/ffffff?text=Banking+App" alt="Application Mobile Banking" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
                         <div class="absolute top-4 left-4">
@@ -412,14 +521,13 @@
                         <p class="text-gray-600 mb-4">
                             Application sécurisée pour les services bancaires
                         </p>
-                        <button onclick="openProjectForm()" class="text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2">
-                            Proposer un projet similaire
+                        <button class="text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2">
+                            Voir les détails
                             <i class="fas fa-arrow-right ml-2"></i>
                         </button>
                     </div>
                 </div>
-
-                <div class="project-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="project-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer" onclick="openProjectDetails('hr')">
                     <div class="relative overflow-hidden">
                         <img src="https://placehold.co/400x250/059669/ffffff?text=HR+System" alt="Système de Gestion RH" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
                         <div class="absolute top-4 left-4">
@@ -435,14 +543,13 @@
                         <p class="text-gray-600 mb-4">
                             Plateforme de gestion des ressources humaines
                         </p>
-                        <button onclick="openProjectForm()" class="text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2">
-                            Proposer un projet similaire
+                        <button class="text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2">
+                            Voir les détails
                             <i class="fas fa-arrow-right ml-2"></i>
                         </button>
                     </div>
                 </div>
-
-                <div class="project-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="project-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer" onclick="openProjectDetails('fitness')">
                     <div class="relative overflow-hidden">
                         <img src="https://placehold.co/400x250/dc2626/ffffff?text=Fitness+App" alt="Application Fitness" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
                         <div class="absolute top-4 left-4">
@@ -458,8 +565,8 @@
                         <p class="text-gray-600 mb-4">
                             Suivi d'activité et coaching personnalisé
                         </p>
-                        <button onclick="openProjectForm()" class="text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2">
-                            Proposer un projet similaire
+                        <button class="text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2">
+                            Voir les détails
                             <i class="fas fa-arrow-right ml-2"></i>
                         </button>
                     </div>
@@ -467,7 +574,6 @@
             </div>
         </div>
     </section>
-
     <!-- CTA Section -->
     <section class="py-20 bg-gradient-to-br from-blue-600 to-purple-600">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -487,10 +593,13 @@
                     <i class="fab fa-whatsapp mr-2"></i>
                     Contacter via WhatsApp
                 </button>
+                <button onclick="openEmail()" class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-200 flex items-center justify-center gap-2">
+                    <i class="fas fa-envelope mr-2"></i>
+                    Contacter via Email
+                </button>
             </div>
         </div>
     </section>
-
     <!-- Contact Section -->
     <section id="contact" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -502,7 +611,6 @@
                     <p class="text-xl text-gray-600 mb-8">
                         Nous sommes là pour répondre à toutes vos questions et discuter de vos projets.
                     </p>
-                    
                     <div class="space-y-6">
                         <div class="flex items-center space-x-4">
                             <div class="bg-green-100 p-3 rounded-lg">
@@ -513,17 +621,15 @@
                                 <p class="text-gray-600">(223) 94472720</p>
                             </div>
                         </div>
-                        
                         <div class="flex items-center space-x-4">
                             <div class="bg-blue-100 p-3 rounded-lg">
                                 <i class="fas fa-envelope text-blue-600 text-xl"></i>
                             </div>
                             <div>
                                 <h3 class="font-semibold text-gray-900">Email</h3>
-                                <p class="text-gray-600">contact@innovtech.com</p>
+                                <p class="text-gray-600">koitalucboubacar0@gmail.com</p>
                             </div>
                         </div>
-                        
                         <div class="flex items-center space-x-4">
                             <div class="bg-purple-100 p-3 rounded-lg">
                                 <i class="fas fa-map-marker-alt text-purple-600 text-xl"></i>
@@ -534,7 +640,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="flex space-x-4 mt-8">
                         <i class="fab fa-facebook text-gray-600 hover:text-blue-600 cursor-pointer transition-colors text-xl"></i>
                         <i class="fab fa-twitter text-gray-600 hover:text-blue-400 cursor-pointer transition-colors text-xl"></i>
@@ -542,45 +647,40 @@
                         <i class="fab fa-linkedin text-gray-600 hover:text-blue-700 cursor-pointer transition-colors text-xl"></i>
                     </div>
                 </div>
-
                 <div class="bg-gray-50 p-8 rounded-2xl">
-                    <form class="space-y-6">
+                    <form id="contactForm" class="space-y-6">
                         <div class="grid md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
                                     Prénom
                                 </label>
-                                <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre prénom">
+                                <input type="text" name="firstName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre prénom" required>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
                                     Nom
                                 </label>
-                                <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre nom">
+                                <input type="text" name="lastName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre nom" required>
                             </div>
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Email
                             </label>
-                            <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="votre@email.com">
+                            <input type="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="votre@email.com" required>
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Sujet
                             </label>
-                            <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Sujet de votre message">
+                            <input type="text" name="subject" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Sujet de votre message" required>
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Message
                             </label>
-                            <textarea rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Décrivez votre projet..."></textarea>
+                            <textarea name="message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Décrivez votre projet..." required></textarea>
                         </div>
-                        
                         <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200">
                             Envoyer le message
                         </button>
@@ -589,18 +689,15 @@
             </div>
         </div>
     </section>
-
     <!-- Auth Modal -->
     <div id="authModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl p-8 max-w-md w-full relative">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times text-xl"></i>
             </button>
-            
             <div class="mb-6">
                 <h3 id="authTitle" class="text-2xl font-bold text-gray-900"></h3>
             </div>
-
             <form id="authForm" class="space-y-4">
                 <div id="nameField" class="hidden">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -608,33 +705,28 @@
                     </label>
                     <input type="text" name="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre nom complet">
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Email
                     </label>
                     <input type="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="votre@email.com" required>
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Mot de passe
                     </label>
                     <input type="password" name="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre mot de passe" required>
                 </div>
-                
                 <div id="confirmPasswordField" class="hidden">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Confirmer mot de passe
                     </label>
                     <input type="password" name="confirmPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Confirmez votre mot de passe">
                 </div>
-                
                 <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200">
                     <span id="authButtonText"></span>
                 </button>
             </form>
-            
             <div class="mt-4 text-center">
                 <button onclick="toggleAuthMode()" class="text-blue-600 hover:text-blue-700 font-medium">
                     <span id="authToggleText"></span>
@@ -642,18 +734,15 @@
             </div>
         </div>
     </div>
-
     <!-- Profile Modal -->
     <div id="profileModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl p-8 max-w-2xl w-full relative">
             <button onclick="closeProfile()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times text-xl"></i>
             </button>
-            
             <div class="mb-6">
                 <h3 class="text-2xl font-bold text-gray-900 mb-2">Profil Utilisateur</h3>
             </div>
-
             <div class="space-y-6">
                 <div class="flex items-center space-x-4">
                     <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
@@ -664,7 +753,6 @@
                         <p id="profileEmail" class="text-gray-600">utilisateur@test.com</p>
                     </div>
                 </div>
-                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -679,52 +767,45 @@
                         <input type="text" id="profileLastName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre nom">
                     </div>
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Email
                     </label>
                     <input type="email" id="profileEmailInput" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="votre@email.com">
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Téléphone
                     </label>
                     <input type="tel" id="profilePhone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre numéro de téléphone">
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Bio
                     </label>
                     <textarea id="profileBio" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Décrivez-vous..."></textarea>
                 </div>
-                
                 <button onclick="saveProfile()" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200">
                     Sauvegarder les modifications
                 </button>
             </div>
         </div>
     </div>
-
     <!-- Settings Modal -->
     <div id="settingsModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl p-8 max-w-md w-full relative">
             <button onclick="closeSettings()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times text-xl"></i>
             </button>
-            
             <div class="mb-6">
                 <h3 class="text-2xl font-bold text-gray-900 mb-2">Paramètres</h3>
             </div>
-
             <div class="space-y-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Couleur principale du site
                     </label>
-                    <div class="grid grid-cols-4 gap-2">
+                    <div class="grid grid-cols-6 gap-2">
                         <button onclick="changeTheme('blue')" class="color-option bg-blue-600" data-color="blue"></button>
                         <button onclick="changeTheme('purple')" class="color-option bg-purple-600" data-color="purple"></button>
                         <button onclick="changeTheme('green')" class="color-option bg-green-600" data-color="green"></button>
@@ -733,32 +814,31 @@
                         <button onclick="changeTheme('pink')" class="color-option bg-pink-500" data-color="pink"></button>
                         <button onclick="changeTheme('indigo')" class="color-option bg-indigo-600" data-color="indigo"></button>
                         <button onclick="changeTheme('teal')" class="color-option bg-teal-600" data-color="teal"></button>
+                        <button onclick="changeTheme('orange')" class="color-option bg-orange-500" data-color="orange"></button>
+                        <button onclick="changeTheme('cyan')" class="color-option bg-cyan-500" data-color="cyan"></button>
+                        <button onclick="changeTheme('lime')" class="color-option bg-lime-500" data-color="lime"></button>
+                        <button onclick="changeTheme('violet')" class="color-option bg-violet-500" data-color="violet"></button>
                     </div>
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Mode d'affichage
                     </label>
                     <select id="displayMode" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
-                        <option value="light">Clair</option>
-                        <option value="dark">Sombre</option>
+                        <option value="light">Mode Jour</option>
+                        <option value="dark">Mode Nuit</option>
                         <option value="auto">Automatique</option>
                     </select>
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Langue
+                        Changer le logo
                     </label>
-                    <select id="language" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
-                        <option value="fr">Français</option>
-                        <option value="en">Anglais</option>
-                        <option value="es">Espagnol</option>
-                        <option value="de">Allemand</option>
-                    </select>
+                    <input type="file" id="logoUpload" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+                    <button onclick="uploadLogo()" class="mt-2 w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200">
+                        Télécharger le logo
+                    </button>
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Code d'administration
@@ -768,25 +848,21 @@
                         Accéder à l'espace admin
                     </button>
                 </div>
-                
                 <button onclick="saveSettings()" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200">
                     Sauvegarder les paramètres
                 </button>
             </div>
         </div>
     </div>
-
     <!-- Admin Panel Modal -->
     <div id="adminPanel" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl p-8 max-w-md w-full relative">
             <button onclick="closeAdminPanel()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times text-xl"></i>
             </button>
-            
             <div class="mb-6">
                 <h3 class="text-2xl font-bold text-gray-900 mb-2">Espace Administrateur</h3>
             </div>
-
             <div class="space-y-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -803,12 +879,11 @@
                         Appliquer le changement
                     </button>
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Changer le nom de l'entreprise
                     </label>
-                    <input type="text" id="companyName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Nouveau nom">
+                    <input type="text" id="companyNameInput" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Nouveau nom">
                     <button onclick="changeCompanyName()" class="mt-2 w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200">
                         Changer le nom
                     </button>
@@ -816,19 +891,49 @@
             </div>
         </div>
     </div>
-
+    <!-- Project Details Modal -->
+    <div id="projectDetailsModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4 project-details-modal">
+        <div class="bg-white rounded-2xl p-8 max-w-4xl w-full relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeProjectDetails()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div class="mb-6">
+                <h3 id="projectDetailTitle" class="text-3xl font-bold text-gray-900 mb-2">Détails du Projet</h3>
+                <p id="projectDetailDescription" class="text-gray-600">Description du projet...</p>
+            </div>
+            <div class="mb-6">
+                <img id="projectDetailImage" src="" alt="Détail du projet" class="w-full rounded-xl project-detail-image">
+            </div>
+            <div class="mb-6">
+                <h4 class="text-xl font-semibold text-gray-900 mb-2">Technologies Utilisées</h4>
+                <p id="projectDetailTech" class="text-gray-600">React, Node.js, PostgreSQL...</p>
+            </div>
+            <div class="mb-6">
+                <h4 class="text-xl font-semibold text-gray-900 mb-2">Fonctionnalités Clés</h4>
+                <ul id="projectDetailFeatures" class="list-disc list-inside text-gray-600 space-y-1">
+                    <!-- Features will be populated by JS -->
+                </ul>
+            </div>
+            <div class="mb-6">
+                <h4 class="text-xl font-semibold text-gray-900 mb-2">Résultats</h4>
+                <p id="projectDetailResults" class="text-gray-600">Augmentation de 30% de la productivité...</p>
+            </div>
+            <button onclick="openWhatsApp()" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2">
+                <i class="fab fa-whatsapp mr-2"></i>
+                Contacter pour personnalisation
+            </button>
+        </div>
+    </div>
     <!-- Project Form Modal -->
     <div id="projectFormModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4 project-form-modal">
         <div class="bg-white rounded-2xl p-8 max-w-2xl w-full relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeProjectForm()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times text-xl"></i>
             </button>
-            
             <div class="mb-6">
                 <h3 class="text-2xl font-bold text-gray-900 mb-2">Proposer un projet</h3>
-                <p class="text-gray-600">Remplissez le formulaire ci-dessous et envoyez directement à INNOVTECH via WhatsApp</p>
+                <p class="text-gray-600">Remplissez le formulaire ci-dessous et envoyez directement à INNOVTECH via WhatsApp ou Email</p>
             </div>
-
             <form id="projectForm" class="space-y-6">
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
@@ -844,21 +949,18 @@
                         <input type="text" name="lastName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre nom" required>
                     </div>
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Email
                     </label>
                     <input type="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="votre@email.com" required>
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Téléphone
                     </label>
                     <input type="tel" name="phone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Votre numéro de téléphone" required>
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Type de projet
@@ -871,14 +973,12 @@
                         <option value="other">Autre</option>
                     </select>
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Description du projet
                     </label>
                     <textarea name="description" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Décrivez votre projet en détail..." required></textarea>
                 </div>
-                
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -906,7 +1006,6 @@
                         </select>
                     </div>
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Priorité
@@ -918,15 +1017,19 @@
                         <option value="urgent">Urgente</option>
                     </select>
                 </div>
-                
-                <button type="submit" class="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2">
-                    <i class="fab fa-whatsapp mr-2"></i>
-                    Envoyer via WhatsApp
-                </button>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button type="submit" formaction="whatsapp" class="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2">
+                        <i class="fab fa-whatsapp mr-2"></i>
+                        Envoyer via WhatsApp
+                    </button>
+                    <button type="submit" formaction="email" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2">
+                        <i class="fas fa-envelope mr-2"></i>
+                        Envoyer via Email
+                    </button>
+                </div>
             </form>
         </div>
     </div>
-
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -934,7 +1037,7 @@
                 <div>
                     <div class="flex items-center space-x-2 mb-4">
                         <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-code text-white"></i>
+                            <i id="footerLogoIcon" class="fas fa-code text-white"></i>
                         </div>
                         <span class="text-xl font-bold">INNOVTECH</span>
                     </div>
@@ -942,7 +1045,6 @@
                         Votre partenaire de confiance pour la transformation digitale.
                     </p>
                 </div>
-                
                 <div>
                     <h3 class="font-semibold mb-4">Services</h3>
                     <ul class="space-y-2 text-gray-400">
@@ -952,7 +1054,6 @@
                         <li><a href="#services" class="hover:text-white transition-colors">Consulting</a></li>
                     </ul>
                 </div>
-                
                 <div>
                     <h3 class="font-semibold mb-4">Liens</h3>
                     <ul class="space-y-2 text-gray-400">
@@ -962,7 +1063,6 @@
                         <li><a href="#projets" class="hover:text-white transition-colors">Projets</a></li>
                     </ul>
                 </div>
-                
                 <div>
                     <h3 class="font-semibold mb-4">Contact</h3>
                     <ul class="space-y-2 text-gray-400">
@@ -970,36 +1070,121 @@
                             <i class="fab fa-whatsapp"></i>
                             (223) 94472720
                         </li>
-                        <li>contact@innovtech.com</li>
+                        <li class="flex items-center gap-2">
+                            <i class="fas fa-envelope"></i>
+                            koitalucboubacar0@gmail.com
+                        </li>
                         <li>Bamako, Mali</li>
                     </ul>
                 </div>
             </div>
-            
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
                 <p>&copy; 2025 INNOVTECH. Tous droits réservés.</p>
             </div>
         </div>
     </footer>
-
     <!-- Tracking Script -->
     <script>
         // Global variables to track authentication state
         let isAuthenticated = false;
         let currentUser = null;
         let currentTheme = 'blue';
-
+        let currentMode = 'light';
+        // Initialize admin settings from localStorage
+        function initializeAdminSettings() {
+            // Load company name if stored
+            const savedCompanyName = localStorage.getItem('innovtech_company_name');
+            if (savedCompanyName) {
+                document.getElementById('companyName').textContent = savedCompanyName;
+                document.getElementById('companyNameInput').value = savedCompanyName;
+            }
+            // Load logo if stored
+            const savedLogo = localStorage.getItem('innovtech_logo');
+            if (savedLogo) {
+                document.getElementById('logoIcon').className = savedLogo + ' text-white text-lg';
+                document.getElementById('footerLogoIcon').className = savedLogo + ' text-white';
+            }
+        }
         // Mobile Menu Toggle
         function toggleMobileMenu() {
             const menu = document.getElementById('mobileMenu');
             menu.classList.toggle('hidden');
         }
-
         // WhatsApp Function
         function openWhatsApp() {
             window.open('https://wa.me/22394472720', '_blank');
         }
-
+        // Email Function
+        function openEmail() {
+            window.open('mailto:koitalucboubacar0@gmail.com', '_blank');
+        }
+        // Chatbot Functions
+        function toggleChatbot() {
+            const chatbot = document.getElementById('chatbotWindow');
+            chatbot.classList.toggle('hidden');
+        }
+        function closeChatbot() {
+            document.getElementById('chatbotWindow').classList.add('hidden');
+        }
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (message) {
+                addMessageToChat(message, 'user');
+                input.value = '';
+                // Simulate bot response
+                setTimeout(() => {
+                    const response = generateBotResponse(message);
+                    addMessageToChat(response, 'bot');
+                }, 1000);
+            }
+        }
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        function addMessageToChat(message, sender) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            if (sender === 'user') {
+                messageDiv.classList.add('user-message');
+            } else {
+                messageDiv.classList.add('bot-message');
+            }
+            messageDiv.textContent = message;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        function generateBotResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            if (lowerMessage.includes('bonjour') || lowerMessage.includes('salut') || lowerMessage.includes('hello')) {
+                return "Bonjour ! Je suis Wisdom+, votre assistante intelligente. Comment puis-je vous aider aujourd'hui ?";
+            } else if (lowerMessage.includes('service') || lowerMessage.includes('services')) {
+                return "INNOVTECH propose des services de développement web, d'applications mobiles et de solutions digitales sur mesure. Voulez-vous plus de détails ?";
+            } else if (lowerMessage.includes('contact') || lowerMessage.includes('whatsapp') || lowerMessage.includes('email')) {
+                return "Vous pouvez nous contacter via WhatsApp au (223) 94472720 ou par email à koitalucboubacar0@gmail.com.";
+            } else if (lowerMessage.includes('projet') || lowerMessage.includes('idée')) {
+                return "J'adore les idées ! Cliquez sur le bouton 'Proposer un projet' pour nous envoyer votre idée via WhatsApp ou Email. Nous serons ravis de vous accompagner dans sa réalisation.";
+            } else if (lowerMessage.includes('aide') || lowerMessage.includes('besoin')) {
+                return "Je suis là pour vous aider ! Vous pouvez me poser des questions sur nos services, nos projets ou comment nous contacter. Qu'avez-vous besoin de savoir ?";
+            } else if (lowerMessage.includes('prix') || lowerMessage.includes('coût') || lowerMessage.includes('budget')) {
+                return "Nos prix varient en fonction de la complexité du projet. Pour une estimation précise, envoyez-nous votre idée via le formulaire de projet et nous vous répondrons avec une proposition détaillée.";
+            } else if (lowerMessage.includes('merci')) {
+                return "Avec plaisir ! N'hésitez pas si vous avez d'autres questions.";
+            } else if (lowerMessage.includes('connexion') || lowerMessage.includes('compte') || lowerMessage.includes('profil')) {
+                return "Vous pouvez créer un compte ou vous connecter en cliquant sur les boutons 'S'inscrire' ou 'Se connecter' en haut à droite. Votre compte vous permet de sauvegarder vos préférences et de retrouver vos informations.";
+            } else if (lowerMessage.includes('theme') || lowerMessage.includes('couleur') || lowerMessage.includes('apparence')) {
+                return "Vous pouvez personnaliser l'apparence du site dans les paramètres. Cliquez sur votre avatar en haut à droite, puis 'Paramètres' pour changer la couleur principale et le mode d'affichage.";
+            } else if (lowerMessage.includes('logo') || lowerMessage.includes('entreprise')) {
+                return "Vous pouvez changer le logo de l'entreprise dans les paramètres administrateur. Cliquez sur votre avatar, puis 'Paramètres', entrez le code admin et choisissez un nouveau logo.";
+            } else if (lowerMessage.includes('admin') || lowerMessage.includes('administrateur')) {
+                return "L'espace administrateur permet de modifier les paramètres avancés du site. Vous devez entrer le code d'administration pour y accéder.";
+            } else {
+                return "Merci pour votre message. En tant qu'assistante intelligente, je peux vous aider à trouver des informations sur nos services, nos projets, les moyens de contact ou la procédure pour nous contacter. Voulez-vous plus d'informations ?";
+            }
+        }
         // Auth Modal Functions
         function openAuthModal(mode) {
             const modal = document.getElementById('authModal');
@@ -1009,7 +1194,6 @@
             const nameField = document.getElementById('nameField');
             const confirmPasswordField = document.getElementById('confirmPasswordField');
             const form = document.getElementById('authForm');
-
             if (mode === 'login') {
                 title.textContent = 'Se connecter';
                 buttonText.textContent = 'Se connecter';
@@ -1020,27 +1204,18 @@
                     e.preventDefault();
                     const email = form.querySelector('input[name="email"]').value;
                     const password = form.querySelector('input[name="password"]').value;
-                    
-                    // Simple validation - in real app, this would be server-side
-                    if (email && password) {
-                        // Simulate user login
-                        const nameParts = email.split('@')[0].split('.');
-                        const firstName = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
-                        const lastName = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1) : 'Test';
-                        
-                        currentUser = {
-                            firstName: firstName,
-                            lastName: lastName,
-                            email: email,
-                            phone: '',
-                            bio: ''
-                        };
+                    // Retrieve stored users
+                    const storedUsers = JSON.parse(localStorage.getItem('innovtech_users')) || [];
+                    const user = storedUsers.find(u => u.email === email && u.password === password);
+                    if (user) {
+                        // Login successful
+                        currentUser = user;
                         isAuthenticated = true;
                         closeAuthModal();
                         updateUIAfterAuth();
                         alert('Connexion réussie !');
                     } else {
-                        alert('Veuillez remplir tous les champs');
+                        alert('Email ou mot de passe incorrect !');
                     }
                 };
             } else {
@@ -1055,57 +1230,61 @@
                     const email = form.querySelector('input[name="email"]').value;
                     const password = form.querySelector('input[name="password"]').value;
                     const confirmPassword = form.querySelector('input[name="confirmPassword"]').value;
-                    
                     if (password !== confirmPassword) {
                         alert('Les mots de passe ne correspondent pas !');
                         return;
                     }
-                    
                     if (password.length < 6) {
                         alert('Le mot de passe doit contenir au moins 6 caractères');
                         return;
                     }
-                    
-                    // Extract first and last name
+                    // Check if user already exists
+                    const storedUsers = JSON.parse(localStorage.getItem('innovtech_users')) || [];
+                    if (storedUsers.some(u => u.email === email)) {
+                        alert('Un utilisateur avec cet email existe déjà !');
+                        return;
+                    }
+                    // Create new user
                     const nameParts = name.split(' ');
                     const firstName = nameParts[0];
                     const lastName = nameParts.slice(1).join(' ') || 'Test';
-                    
-                    // Simulate user registration
-                    currentUser = {
+                    const newUser = {
                         firstName: firstName,
                         lastName: lastName,
                         email: email,
                         phone: '',
-                        bio: ''
+                        bio: '',
+                        password: password // In a real app, this should be hashed
                     };
+                    // Store user in localStorage
+                    storedUsers.push(newUser);
+                    localStorage.setItem('innovtech_users', JSON.stringify(storedUsers));
+                    // Login the user
+                    currentUser = newUser;
                     isAuthenticated = true;
                     closeAuthModal();
                     updateUIAfterAuth();
-                    
                     // Send email to koitalucboubacar0@gmail.com
                     const subject = encodeURIComponent('Nouvel utilisateur inscrit - INNOVTECH');
-                    const body = encodeURIComponent(`Nouvel utilisateur inscrit:\n\nNom: ${firstName} ${lastName}\nEmail: ${email}\nDate: ${new Date().toLocaleString()}`);
+                    const body = encodeURIComponent(`Nouvel utilisateur inscrit:
+Nom: ${firstName} ${lastName}
+Email: ${email}
+Date: ${new Date().toLocaleString()}`);
                     window.open(`mailto:koitalucboubacar0@gmail.com?subject=${subject}&body=${body}`, '_blank');
-                    
-                    alert(`Bonjour ${firstName} ${lastName} ! Bienvenu sur La plateforme INNOVTECH.`);
+                    alert(`Bonjour ${firstName} ${lastName} ! Bienvenu sur La plateforme INNOVTECH. Votre compte est maintenant enregistré.`);
                 };
             }
-            
             document.getElementById('authMode').value = mode;
             modal.classList.remove('hidden');
         }
-
         function closeAuthModal() {
             document.getElementById('authModal').classList.add('hidden');
         }
-
         function toggleAuthMode() {
             const currentMode = document.getElementById('authMode').value;
             const newMode = currentMode === 'login' ? 'register' : 'login';
             openAuthModal(newMode);
         }
-
         // Update UI after authentication
         function updateUIAfterAuth() {
             if (isAuthenticated && currentUser) {
@@ -1113,15 +1292,12 @@
                 document.getElementById('userGreeting').classList.remove('hidden');
                 document.getElementById('userName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
                 document.getElementById('userInitials').textContent = (currentUser.firstName[0] + currentUser.lastName[0]).toUpperCase();
-                
                 // Hide auth buttons
                 document.getElementById('loginBtn').classList.add('hidden');
                 document.getElementById('registerBtn').classList.add('hidden');
-                
                 // Show mobile user menu
                 document.getElementById('mobileUserMenu').classList.remove('hidden');
                 document.getElementById('mobileAuthButtons').classList.add('hidden');
-                
                 // Update welcome message
                 document.getElementById('welcomeMessage').innerHTML = 
                     `Bonjour <span class="text-blue-600">${currentUser.firstName}</span>,<br>
@@ -1129,15 +1305,12 @@
             } else {
                 // Hide user greeting
                 document.getElementById('userGreeting').classList.add('hidden');
-                
                 // Show auth buttons
                 document.getElementById('loginBtn').classList.remove('hidden');
                 document.getElementById('registerBtn').classList.remove('hidden');
-                
                 // Show mobile auth buttons
                 document.getElementById('mobileUserMenu').classList.add('hidden');
                 document.getElementById('mobileAuthButtons').classList.remove('hidden');
-                
                 // Reset welcome message
                 document.getElementById('welcomeMessage').innerHTML = 
                     `Transformez vos idées en
@@ -1145,13 +1318,11 @@
                      innovantes`;
             }
         }
-
         // User menu functions
         function toggleUserMenu() {
             const menu = document.getElementById('userMenu');
             menu.classList.toggle('hidden');
         }
-
         function openProfile(event) {
             event.preventDefault();
             if (isAuthenticated && currentUser) {
@@ -1163,15 +1334,12 @@
                 document.getElementById('profileName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
                 document.getElementById('profileEmail').textContent = currentUser.email;
                 document.getElementById('userInitials').textContent = (currentUser.firstName[0] + currentUser.lastName[0]).toUpperCase();
-                
                 document.getElementById('profileModal').classList.remove('hidden');
             }
         }
-
         function closeProfile() {
             document.getElementById('profileModal').classList.add('hidden');
         }
-
         function saveProfile() {
             if (isAuthenticated && currentUser) {
                 currentUser.firstName = document.getElementById('profileFirstName').value;
@@ -1179,13 +1347,18 @@
                 currentUser.email = document.getElementById('profileEmailInput').value;
                 currentUser.phone = document.getElementById('profilePhone').value;
                 currentUser.bio = document.getElementById('profileBio').value;
-                
+                // Update stored user
+                const storedUsers = JSON.parse(localStorage.getItem('innovtech_users')) || [];
+                const userIndex = storedUsers.findIndex(u => u.email === currentUser.email);
+                if (userIndex !== -1) {
+                    storedUsers[userIndex] = currentUser;
+                    localStorage.setItem('innovtech_users', JSON.stringify(storedUsers));
+                }
                 updateUIAfterAuth();
                 closeProfile();
                 alert('Profil mis à jour avec succès !');
             }
         }
-
         function openSettings(event) {
             event.preventDefault();
             // Set current theme as active
@@ -1195,14 +1368,11 @@
                     option.classList.add('active');
                 }
             });
-            
             document.getElementById('settingsModal').classList.remove('hidden');
         }
-
         function closeSettings() {
             document.getElementById('settingsModal').classList.add('hidden');
         }
-
         function openAdminPanel() {
             const code = document.getElementById('adminCode').value;
             if (code === 'innov!17@') {
@@ -1212,15 +1382,12 @@
                 alert('Code d\'administration incorrect !');
             }
         }
-
         function closeAdminPanel() {
             document.getElementById('adminPanel').classList.add('hidden');
         }
-
         function changeAdminLogo() {
             const logoType = document.getElementById('logoSelector').value;
             let iconClass = '';
-            
             switch(logoType) {
                 case 'code':
                     iconClass = 'fas fa-code';
@@ -1238,30 +1405,33 @@
                     iconClass = 'fas fa-star';
                     break;
             }
-            
             document.getElementById('logoIcon').className = iconClass + ' text-white text-lg';
             document.getElementById('footerLogoIcon').className = iconClass + ' text-white';
-            alert('Logo changé avec succès !');
+            // Save to localStorage
+            localStorage.setItem('innovtech_logo', iconClass);
+            alert('Logo changé avec succès et enregistré !');
         }
-
         function changeCompanyName() {
-            const newName = document.getElementById('companyName').value;
+            const newName = document.getElementById('companyNameInput').value;
             if (newName) {
-                document.querySelector('.bg-gradient-to-r.from-blue-600.to-purple-600.bg-clip-text.text-transparent').textContent = newName;
-                document.querySelector('.text-xl.font-bold').textContent = newName;
-                alert('Nom de l\'entreprise changé avec succès !');
+                document.getElementById('companyName').textContent = newName;
+                // Save to localStorage
+                localStorage.setItem('innovtech_company_name', newName);
+                alert('Nom de l\'entreprise changé avec succès et enregistré !');
             }
         }
-
         function saveSettings() {
             const displayMode = document.getElementById('displayMode').value;
-            const language = document.getElementById('language').value;
-            
-            // In a real app, you would save these settings to localStorage or a server
+            currentMode = displayMode;
+            // Apply dark mode if selected
+            if (displayMode === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
             alert('Paramètres sauvegardés avec succès !');
             closeSettings();
         }
-
         function logout(event) {
             event.preventDefault();
             isAuthenticated = false;
@@ -1270,15 +1440,12 @@
             closeUserMenu();
             alert('Vous avez été déconnecté avec succès.');
         }
-
         function closeUserMenu() {
             document.getElementById('userMenu').classList.add('hidden');
         }
-
         // Change theme function
         function changeTheme(color) {
             currentTheme = color;
-            
             // Update active state
             document.querySelectorAll('.color-option').forEach(option => {
                 option.classList.remove('active');
@@ -1286,64 +1453,135 @@
                     option.classList.add('active');
                 }
             });
-            
-            const body = document.getElementById('mainBody');
-            const header = document.querySelector('header');
-            
-            // Remove all theme classes
-            body.classList.remove('bg-blue-50', 'bg-purple-50', 'bg-green-50', 'bg-red-50', 'bg-yellow-50', 'bg-pink-50', 'bg-indigo-50', 'bg-teal-50');
-            header.classList.remove('bg-blue-50', 'bg-purple-50', 'bg-green-50', 'bg-red-50', 'bg-yellow-50', 'bg-pink-50', 'bg-indigo-50', 'bg-teal-50');
-            
-            // Add new theme class based on color
-            switch(color) {
-                case 'blue':
-                    body.classList.add('bg-blue-50');
-                    header.classList.add('bg-blue-50');
-                    break;
-                case 'purple':
-                    body.classList.add('bg-purple-50');
-                    header.classList.add('bg-purple-50');
-                    break;
-                case 'green':
-                    body.classList.add('bg-green-50');
-                    header.classList.add('bg-green-50');
-                    break;
-                case 'red':
-                    body.classList.add('bg-red-50');
-                    header.classList.add('bg-red-50');
-                    break;
-                case 'yellow':
-                    body.classList.add('bg-yellow-50');
-                    header.classList.add('bg-yellow-50');
-                    break;
-                case 'pink':
-                    body.classList.add('bg-pink-50');
-                    header.classList.add('bg-pink-50');
-                    break;
-                case 'indigo':
-                    body.classList.add('bg-indigo-50');
-                    header.classList.add('bg-indigo-50');
-                    break;
-                case 'teal':
-                    body.classList.add('bg-teal-50');
-                    header.classList.add('bg-teal-50');
-                    break;
+        }
+        // Logo upload function
+        function uploadLogo() {
+            const fileInput = document.getElementById('logoUpload');
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Create a new image to get its dimensions
+                    const img = new Image();
+                    img.onload = function() {
+                        // For this demo, we'll just show an alert
+                        // In a real app, you would save this image to a server
+                        alert('Logo téléchargé avec succès ! (Fonctionnalité de sauvegarde démo)');
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Veuillez sélectionner un fichier image');
             }
         }
+        // Project Details Functions
+        function openProjectDetails(projectType) {
+            const modal = document.getElementById('projectDetailsModal');
+            const title = document.getElementById('projectDetailTitle');
+            const description = document.getElementById('projectDetailDescription');
+            const image = document.getElementById('projectDetailImage');
+            const tech = document.getElementById('projectDetailTech');
+            const featuresList = document.getElementById('projectDetailFeatures');
+            const results = document.getElementById('projectDetailResults');
 
+            // Clear previous content
+            featuresList.innerHTML = '';
+
+            // Set content based on project type
+            if (projectType === 'ecommerce') {
+                title.textContent = 'Plateforme E-commerce';
+                description.textContent = 'Solution complète de vente en ligne avec panier, paiement sécurisé, gestion des stocks et back-office administrateur.';
+                image.src = 'https://placehold.co/800x450/2563eb/ffffff?text=E-commerce+Platform';
+                tech.textContent = 'React, Node.js, MongoDB, Stripe API';
+                const features = [
+                    'Catalogue de produits dynamique',
+                    'Système de panier persistant',
+                    'Paiement en ligne sécurisé',
+                    'Gestion des stocks et commandes',
+                    'Interface administrateur complète',
+                    'Responsive Design'
+                ];
+                features.forEach(feature => {
+                    const li = document.createElement('li');
+                    li.textContent = feature;
+                    featuresList.appendChild(li);
+                });
+                results.textContent = 'Augmentation de 40% des ventes en ligne pour le client.';
+            } else if (projectType === 'banking') {
+                title.textContent = 'Application Mobile Banking';
+                description.textContent = 'Application sécurisée permettant aux utilisateurs de gérer leurs comptes bancaires, effectuer des transferts et payer des factures.';
+                image.src = 'https://placehold.co/800x450/7c3aed/ffffff?text=Banking+App';
+                tech.textContent = 'React Native, Firebase, Node.js, OAuth 2.0';
+                const features = [
+                    'Authentification biométrique',
+                    'Consultation des soldes',
+                    'Transferts d\'argent instantanés',
+                    'Paiement de factures',
+                    'Notifications push sécurisées',
+                    'Historique des transactions'
+                ];
+                features.forEach(feature => {
+                    const li = document.createElement('li');
+                    li.textContent = feature;
+                    featuresList.appendChild(li);
+                });
+                results.textContent = 'Réduction de 60% des visites en agence bancaire.';
+            } else if (projectType === 'hr') {
+                title.textContent = 'Système de Gestion RH';
+                description.textContent = 'Plateforme web pour la gestion des ressources humaines, incluant la gestion des employés, des congés et des paies.';
+                image.src = 'https://placehold.co/800x450/059669/ffffff?text=HR+System';
+                tech.textContent = 'Vue.js, Laravel, MySQL, PDF Generation';
+                const features = [
+                    'Gestion des employés',
+                    'Système de demande de congé',
+                    'Calcul de la paie automatisé',
+                    'Reporting RH avancé',
+                    'Documents numériques',
+                    'Calendrier des congés'
+                ];
+                features.forEach(feature => {
+                    const li = document.createElement('li');
+                    li.textContent = feature;
+                    featuresList.appendChild(li);
+                });
+                results.textContent = 'Gain de 30% de productivité dans le service RH.';
+            } else if (projectType === 'fitness') {
+                title.textContent = 'Application Fitness';
+                description.textContent = 'Application mobile pour le suivi d\'activité physique, la planification d\'entraînements et le coaching personnalisé.';
+                image.src = 'https://placehold.co/800x450/dc2626/ffffff?text=Fitness+App';
+                tech.textContent = 'Flutter, Firebase, HealthKit, Maps API';
+                const features = [
+                    'Suivi GPS des entraînements',
+                    'Planification d\'entraînements personnalisés',
+                    'Suivi de la fréquence cardiaque',
+                    'Conseils nutritionnels',
+                    'Défis et récompenses',
+                    'Intégration avec Apple Health / Google Fit'
+                ];
+                features.forEach(feature => {
+                    const li = document.createElement('li');
+                    li.textContent = feature;
+                    featuresList.appendChild(li);
+                });
+                results.textContent = 'Augmentation de 50% de l\'engagement des utilisateurs.';
+            }
+
+            modal.classList.remove('hidden');
+        }
+        function closeProjectDetails() {
+            document.getElementById('projectDetailsModal').classList.add('hidden');
+        }
         // Project Form Functions
         function openProjectForm() {
             document.getElementById('projectFormModal').classList.remove('hidden');
         }
-
         function closeProjectForm() {
             document.getElementById('projectFormModal').classList.add('hidden');
         }
-
         // Handle project form submission
         document.getElementById('projectForm').onsubmit = function(e) {
             e.preventDefault();
-            
             const formData = new FormData(this);
             const projectData = {
                 firstName: formData.get('firstName'),
@@ -1356,24 +1594,77 @@
                 budget: formData.get('budget'),
                 priority: formData.get('priority')
             };
-
-            // Create WhatsApp message
-            const message = `Nouvelle proposition de projet de ${projectData.firstName} ${projectData.lastName}:\n\n` +
-                           `Email: ${projectData.email}\n` +
-                           `Téléphone: ${projectData.phone}\n` +
-                           `Type de projet: ${projectData.projectType}\n` +
-                           `Durée estimée: ${projectData.duration}\n` +
-                           `Budget estimé: ${projectData.budget}\n` +
-                           `Priorité: ${projectData.priority}\n\n` +
-                           `Description:\n${projectData.description}`;
-
-            const encodedMessage = encodeURIComponent(message);
-            window.open(`https://wa.me/22394472720?text=${encodedMessage}`, '_blank');
-            
+            const action = e.submitter.formAction;
+            if (action === 'email') {
+                // Create email message
+                const subject = encodeURIComponent(`Nouvelle proposition de projet - ${projectData.firstName} ${projectData.lastName}`);
+                const message = `Nouvelle proposition de projet de ${projectData.firstName} ${projectData.lastName}:
+` +
+                               `Email: ${projectData.email}
+` +
+                               `Téléphone: ${projectData.phone}
+` +
+                               `Type de projet: ${projectData.projectType}
+` +
+                               `Durée estimée: ${projectData.duration}
+` +
+                               `Budget estimé: ${projectData.budget}
+` +
+                               `Priorité: ${projectData.priority}
+` +
+                               `Description:
+${projectData.description}`;
+                const body = encodeURIComponent(message);
+                window.open(`mailto:koitalucboubacar0@gmail.com?subject=${subject}&body=${body}`, '_blank');
+            } else {
+                // Create WhatsApp message
+                const message = `Nouvelle proposition de projet de ${projectData.firstName} ${projectData.lastName}:
+` +
+                               `Email: ${projectData.email}
+` +
+                               `Téléphone: ${projectData.phone}
+` +
+                               `Type de projet: ${projectData.projectType}
+` +
+                               `Durée estimée: ${projectData.duration}
+` +
+                               `Budget estimé: ${projectData.budget}
+` +
+                               `Priorité: ${projectData.priority}
+` +
+                               `Description:
+${projectData.description}`;
+                const encodedMessage = encodeURIComponent(message);
+                window.open(`https://wa.me/22394472720?text=${encodedMessage}`, '_blank');
+            }
             closeProjectForm();
-            alert('Votre projet a été envoyé avec succès via WhatsApp !');
+            alert('Votre projet a été envoyé avec succès !');
         };
-
+        // Handle contact form submission
+        document.getElementById('contactForm').onsubmit = function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const contactData = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                email: formData.get('email'),
+                subject: formData.get('subject'),
+                message: formData.get('message')
+            };
+            // Create email message
+            const subject = encodeURIComponent(`Contact - ${contactData.subject}`);
+            const message = `Message de ${contactData.firstName} ${contactData.lastName}:
+` +
+                           `Email: ${contactData.email}
+` +
+                           `Sujet: ${contactData.subject}
+` +
+                           `Message:
+${contactData.message}`;
+            const body = encodeURIComponent(message);
+            window.open(`mailto:koitalucboubacar0@gmail.com?subject=${subject}&body=${body}`, '_blank');
+            alert('Votre message a été envoyé avec succès via email !');
+        };
         // Add hidden input to track mode
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('authForm');
@@ -1382,57 +1673,66 @@
             modeInput.id = 'authMode';
             modeInput.name = 'mode';
             form.appendChild(modeInput);
-            
+            // Check if user is already logged in
+            const storedUsers = JSON.parse(localStorage.getItem('innovtech_users')) || [];
+            const savedUserEmail = localStorage.getItem('innovtech_current_user');
+            if (savedUserEmail) {
+                const user = storedUsers.find(u => u.email === savedUserEmail);
+                if (user) {
+                    currentUser = user;
+                    isAuthenticated = true;
+                }
+            }
+            // Initialize admin settings
+            initializeAdminSettings();
             // Initialize UI
             updateUIAfterAuth();
         });
-
         // Close mobile menu when clicking outside
         document.addEventListener('click', function(event) {
             const mobileMenu = document.getElementById('mobileMenu');
             const menuButton = document.querySelector('[onclick="toggleMobileMenu()"]');
-            
             if (!mobileMenu.contains(event.target) && !menuButton.contains(event.target) && !mobileMenu.classList.contains('hidden')) {
                 mobileMenu.classList.add('hidden');
             }
         });
-
         // Close modals when clicking outside
         window.onclick = function(event) {
             const authModal = document.getElementById('authModal');
             const projectModal = document.getElementById('projectFormModal');
+            const projectDetailsModal = document.getElementById('projectDetailsModal');
             const profileModal = document.getElementById('profileModal');
             const settingsModal = document.getElementById('settingsModal');
             const adminPanel = document.getElementById('adminPanel');
+            const chatbotWindow = document.getElementById('chatbotWindow');
             const userMenu = document.getElementById('userMenu');
             const userMenuButton = document.querySelector('[onclick="toggleUserMenu()"]');
-            
             if (event.target === authModal.parentElement) {
                 closeAuthModal();
             }
-            
             if (event.target === projectModal.parentElement) {
                 closeProjectForm();
             }
-            
+            if (event.target === projectDetailsModal.parentElement) {
+                closeProjectDetails();
+            }
             if (event.target === profileModal.parentElement) {
                 closeProfile();
             }
-            
             if (event.target === settingsModal.parentElement) {
                 closeSettings();
             }
-            
             if (event.target === adminPanel.parentElement) {
                 closeAdminPanel();
             }
-            
+            if (event.target === chatbotWindow.parentElement && !chatbotWindow.classList.contains('hidden')) {
+                closeChatbot();
+            }
             if (event.target !== userMenu && event.target !== userMenuButton && !userMenu.contains(event.target)) {
                 userMenu.classList.add('hidden');
             }
         };
     </script>
-
     <!-- Invisible Tracking Script -->
     <script>
         // Invisible visitor tracking system
@@ -1450,7 +1750,6 @@
                 cookiesEnabled: navigator.cookieEnabled,
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
             };
-
             // Send tracking data to server via AJAX
             fetch('/tracking.php', {
                 method: 'POST',
@@ -1462,7 +1761,6 @@
                 // Silent failure - don't alert user about tracking
                 console.log('Tracking data sent silently');
             });
-
             // Also send via image request (invisible tracking pixel)
             const trackingPixel = new Image(1, 1);
             trackingPixel.src = '/tracking.php?' + new URLSearchParams({
